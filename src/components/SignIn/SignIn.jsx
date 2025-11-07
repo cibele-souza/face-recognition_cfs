@@ -38,6 +38,12 @@ class SignIn extends Component {
 			})
 	}
 
+	handleSignInKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            this.onSubmitSignIn();
+        }
+    }
+
     render() {
 	   const { onRouteChange } = this.props;
 	   return (
@@ -60,6 +66,7 @@ class SignIn extends Component {
 							<label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
 							<input 
 								onChange={this.onPasswordChange}
+								onKeyDown={this.handleSignInKeyDown}
 								className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
 								type="password" 
 								name="password"  
@@ -70,13 +77,17 @@ class SignIn extends Component {
 					<div className="">
 						<input 
 							onClick={this.onSubmitSignIn} 
+							tabIndex='0'
+                            role='button'   // Tells screen readers this behaves like a button (good for accessibility)
 							className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib" 
 							type="submit" 
 							value="Sign in" 
 						/>
 					</div>
 					<div className="lh-copy mt3">
-						<p onClick={() => onRouteChange("register")} href="#0" className="f6 link dim black db pointer">Register</p>
+						<p
+						onClick={() => onRouteChange("register")} 
+						className="f6 link dim black db pointer">Register</p>
 					</div>
 			 	</div>
 		  </main>

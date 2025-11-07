@@ -34,13 +34,18 @@ class Register extends Component  {
 		})
 			.then (response => response.json())
 			.then (user => {
-				if (user) {
+				if (user.id) {
                     this.props.loadUser(user);
-					this.props.onRouteChange('home');   
+					this.props.onRouteChange('signin');   
 				}
 			})
 	}
 
+    handleRegisterKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            this.onSubmitRegister();
+        }
+    }
 
 
     render () {
@@ -75,6 +80,7 @@ class Register extends Component  {
                                 <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
                                 <input 
                                     onChange={this.onPasswordChange}
+                                    onKeyDown={this.handleRegisterKeyDown}        
                                     className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" 
                                     type="password" 
                                     name="password"  
@@ -83,7 +89,14 @@ class Register extends Component  {
                             </div>
                         </fieldset>
                         <div className="lh-copy mt3">
-                        <p onClick={this.onSubmitRegister} href="#0" className="f6 link dim black db pointer">Register</p>
+                        <p
+                            onClick={this.onSubmitRegister}
+                            tabIndex='0'    // Makes the element focusable via keyboard (so users can tab to it)
+                            role='button'   // Tells screen readers this behaves like a button (good for accessibility)
+                            className="f6 link dim black db pointer"
+                        >
+                            Register
+                        </p>
                         </div>
                     </div>
                 </main>

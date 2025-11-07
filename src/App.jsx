@@ -12,72 +12,26 @@ import './App.css';
 import 'tachyons';
 
 
-// CLARIFAI
-//////////////////////////////////////////////////////////////////////////////////////////////////
-	const MODEL_ID = 'face-detection';
-
-	const returnClarifaiRequestOptions = (imageUrl) => {
-	// Your PAT (Personal Access Token) can be found in the Account's Security section
-	const PAT = '3c886cb6ca344b89a3d10bca79135c5c';
-	// Specify the correct user_id/app_id pairings
-	// Since you're making inferences outside your app's scope
-	const USER_ID = 'clarifai';
-	const APP_ID = 'main';
-	// Change these to whatever model and image URL you want to use
-	const IMAGE_URL = imageUrl;
-	
-	const raw = JSON.stringify({
-		"user_app_id": {
-			"user_id": USER_ID,
-			"app_id": APP_ID
-		},
-		"inputs": [
-			{
-				"data": {
-					"image": {
-						"url": IMAGE_URL
-						// "base64": IMAGE_BYTES_STRING
-					}
-				}
-			}
-		]
-	});
-
-	const requestOptions = {
-		method: 'POST',
-		headers: {
-			'Accept': 'application/json',
-			'Authorization': 'Key ' + PAT
-		},
-		body: raw
-	};
-
-	return requestOptions;
-
-  };
-
-
-
-
+const initialState = {
+	input:'',
+	imageUrl:null,
+	boxes:[],
+	route: 'signin', //keeps track of where we are in the page
+	isSignedIn: false,
+	user: {
+		id: '',
+		name: '',
+		email: '',
+		entries: 0,
+		joined: ''
+	}
+}
 
 
 class App extends Component {
   constructor() {
 	super();
-	this.state = {
-	  input:'',
-	  imageUrl:null,
-	  boxes:[],
-	  route: 'signin', //keeps track of where we are in the page
-	  isSignedIn: false,
-	  user: {
-		 id: '',
-		 name: '',
-		 email: '',
-		 entries: 0,
-		 joined: ''
-	  }
-	}
+	this.state = initialState;
   }
 
   // function called at Register that updates the user data in the main application
@@ -91,18 +45,21 @@ class App extends Component {
 	}})
 }
 
-
   onInputChange = (event) => {
 	this.setState({ input: event.target.value });
   }
 
   onButtonSubmit = () => {
 	this.setState({ imageUrl: this.state.input});
-
-	fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/outputs", returnClarifaiRequestOptions(this.state.input))
+	fetch ('http://localhost:3000/imageurl', {
+		method: 'post',
+		headers: {'Content-Type': 'application/json'},
+		body: JSON.stringify({
+			input: this.state.input
+		})
+	})			
 		.then(response => response.json())
 		.then(result => {
-
 			if (result) {
 				fetch('http://localhost:3000/image', {
 					method: 'put',
@@ -156,7 +113,7 @@ class App extends Component {
 			this.setState({ boxes: boxes });
 			
 		})
-		.catch(error => console.log('error', error));
+		.catch(error => console.log('error detecting faces', error));
   }
 
   // 2) Add a method to calculate box positions
@@ -168,9 +125,7 @@ class App extends Component {
 
 	const width = Number(image.width);
 	const height = Number(image.height);
-	console.log(`calculateFaceBoxes: width: ${width} height: ${height}`);
 	
-
 	return this.state.boxes.map(box => {
 	  return {
 		leftCol: box.leftCol * width,
@@ -184,11 +139,12 @@ class App extends Component {
 
   onRouteChange = (route) => {
 	if (route === 'signout') {
-	  this.setState({ isSignedIn: false })
+		this.setState(initialState)
 	} else if (route === 'home') {
-	  this.setState({ isSignedIn: true })
+		this.setState({ isSignedIn: true, route:route })
+	} else {
+		this.setState({ route: route });
 	}
-	this.setState({ route: route });
   }
 
   render() {
