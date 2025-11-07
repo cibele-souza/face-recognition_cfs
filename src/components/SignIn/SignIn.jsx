@@ -21,7 +21,7 @@ class SignIn extends Component {
     }
     
     onSubmitSignIn = () => {
-		fetch('http://localhost:3000/signin', {
+		fetch('https://face-recognition-api-cfs.onrender.com/signin', {
 			method: 'post',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify({
@@ -36,6 +36,7 @@ class SignIn extends Component {
 					this.props.onRouteChange('home');   
 				}
 			})
+			.catch (error => console.log ('error signin in'))
 	}
 
 	handleSignInKeyDown = (event) => {

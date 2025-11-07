@@ -23,7 +23,7 @@ class Register extends Component  {
     }
 
     onSubmitRegister = () => {
-		fetch('http://localhost:3000/register', {
+		fetch('https://face-recognition-api-cfs.onrender.com/register', {
 			method: 'post',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify({
@@ -39,6 +39,7 @@ class Register extends Component  {
 					this.props.onRouteChange('signin');   
 				}
 			})
+            .catch (error => console.log('error registering'))
 	}
 
     handleRegisterKeyDown = (event) => {
